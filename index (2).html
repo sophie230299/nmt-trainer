@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тренажер НМТ: англійська</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--fg:#14213d;--muted:#5b6785;--line:#d5dcec;--blue:#1d3f9e;--on-blue:#fff;--yellow:#f6c915;--ok:#12794a;--okbg:#e2f5ea;--bad:#b3261e;--badbg:#fde8e6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0e1424;--card:#172038;--fg:#e8ecf7;--muted:#9aa6c6;--line:#2a3558;--blue:#7d9bff;--on-blue:#0e1424;--ok:#5fd39b;--okbg:#12301f;--bad:#ff8a80;--badbg:#3a1a18}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0e1424;--card:#172038;--fg:#e8ecf7;--muted:#9aa6c6;--line:#2a3558;--blue:#7d9bff;--on-blue:#0e1424;--ok:#5fd39b;--okbg:#12301f;--bad:#ff8a80;--badbg:#3a1a18}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:620px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.top b{font-size:15px}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;background:var(--yellow);color:#14213d;padding:4px 12px;border-radius:99px}
+.timer.low{background:var(--bad);color:#fff}
+.dots{display:flex;gap:6px;margin-bottom:16px}
+.dots button{flex:1;height:8px;border:0;border-radius:4px;background:var(--line);padding:0;cursor:pointer}
+.dots .done{background:var(--blue)}
+.dots .cur{outline:2px solid var(--fg);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.meta{color:var(--muted);font-size:14px;margin:0 0 8px}
+.passage{border-left:4px solid var(--yellow);padding:4px 0 4px 12px;margin:0 0 14px;color:var(--fg)}
+h1{font-size:24px;line-height:1.25;margin:0 0 8px}
+h2{font-size:19px;line-height:1.35;margin:0 0 14px;font-weight:600}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;color:inherit;background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+.opt .l{font-weight:700;min-width:1.2em;color:var(--muted)}
+.opt.sel{border-color:var(--blue)}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default}
+.nav{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;font:inherit;font-weight:600;border-radius:12px;padding:13px;border:2px solid var(--blue);background:transparent;color:var(--blue);cursor:pointer}
+.btn.p{background:var(--blue);color:var(--on-blue)}
+.btn:disabled{opacity:.4;cursor:default}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.score{font-size:46px;font-weight:800;line-height:1;margin:6px 0}
+.why{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg);font-size:15px}
+.rv{margin-top:14px}
+.tag{font-size:13px;font-weight:700}
+.tag.ok{color:var(--ok)}.tag.bad{color:var(--bad)}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var POOL=[
+{t:"Граматика",q:"If I ___ more time, I would learn Spanish.",o:["have","had","will have","would have"],a:1,e:"Умовне речення II типу (нереальна ситуація в теперішньому): If + Past Simple, would + дієслово."},
+{t:"Граматика",q:"She has lived in Warsaw ___ 2019.",o:["for","from","since","during"],a:2,e:"Since + точка відліку (2019). For + тривалість (for five years)."},
+{t:"Граматика",q:"I’m looking forward to ___ you next week.",o:["see","seeing","saw","be seen"],a:1,e:"Після look forward to йде герундій (-ing), бо to тут прийменник."},
+{t:"Граматика",q:"By the time we arrived, the film ___.",o:["already started","had already started","has already started","was already starting"],a:1,e:"Past Perfect показує дію, що сталася раніше за іншу минулу дію (by the time we arrived)."},
+{t:"Лексика",q:"Thank you for your ___. It really helped me.",o:["kindly","kindness","kindful","kinded"],a:1,e:"Після притяжного займенника (your) потрібен іменник: kindness."},
+{t:"Лексика",q:"Please ___ the TV. It’s too loud.",o:["turn up","turn into","turn down","turn on"],a:2,e:"turn down = зменшити гучність; turn up = збільшити; turn on = увімкнути."},
+{t:"Граматика",q:"She is ___ honest person.",o:["a","an","the","–"],a:1,e:"Слово honest починається зі звука /ɒ/ (h не читається), тому an."},
+{t:"Читання",p:"Maria started learning English at the age of seven. At first, she found pronunciation difficult, but watching series with subtitles helped her a lot. Now she works as a translator and says that regular practice is more important than talent.",q:"What helped Maria with pronunciation?",o:["Working as a translator","Watching series with subtitles","Her natural talent","Moving abroad"],a:1,e:"У тексті сказано, що перегляд серіалів із субтитрами їй дуже допоміг."}
+];
+POOL.push(
+{t:"Граматика",g:"cond",q:"If it rains tomorrow, we ___ at home.",o:["stayed","will stay","would stay","had stayed"],a:1,e:"Умовне речення I типу (реальна ситуація в майбутньому): If + Present Simple, will + дієслово."},
+{t:"Граматика",g:"cond",q:"If she had studied harder, she ___ the exam.",o:["would pass","will pass","would have passed","had passed"],a:2,e:"Умовне речення III типу (нереальне минуле): If + Past Perfect, would have + V3."},
+{t:"Граматика",g:"tense",q:"We have known each other ___ ten years.",o:["for","since","from","ago"],a:0,e:"For + тривалість (ten years). Since + точка відліку (since 2016)."},
+{t:"Граматика",g:"tense",q:"I ___ never been to Italy.",o:["have","has","am","did"],a:0,e:"Present Perfect: have/has + V3. З I вживаємо have."},
+{t:"Граматика",g:"ger",q:"He enjoys ___ football with friends.",o:["play","to play","playing","played"],a:2,e:"Після enjoy вживаємо герундій (-ing)."},
+{t:"Граматика",g:"ger",q:"She decided ___ a new job.",o:["finding","to find","find","found"],a:1,e:"Після decide вживаємо інфінітив із to."},
+{t:"Граматика",g:"pperf",q:"By the time the police came, the thief ___.",o:["escaped","had escaped","has escaped","was escaping"],a:1,e:"Past Perfect: дія завершилась до іншої минулої дії (by the time the police came)."},
+{t:"Граматика",g:"pperf",q:"When I arrived, Anna ___ already left.",o:["has","had","was","did"],a:1,e:"Past Perfect: had + V3. Анна пішла раніше, ніж я прийшов."},
+{t:"Лексика",g:"wf",q:"She is a very ___ driver and never goes too fast.",o:["careful","carefully","care","carelessness"],a:0,e:"Перед іменником driver потрібен прикметник: careful."},
+{t:"Лексика",g:"wf",q:"The ___ of the new bridge took three years.",o:["construct","constructive","construction","constructor"],a:2,e:"Після the та перед of потрібен іменник: construction (будівництво)."},
+{t:"Лексика",g:"phr",q:"I can’t find my keys. Can you help me ___ them?",o:["look after","look for","look up","look into"],a:1,e:"look for = шукати; look after = доглядати; look up = шукати інформацію; look into = розслідувати."},
+{t:"Лексика",g:"phr",q:"He ___ smoking last year, and he feels much better.",o:["gave up","gave in","gave out","gave away"],a:0,e:"give up = кинути (звичку); give in = здатися; give away = віддати безкоштовно."},
+{t:"Граматика",g:"art",q:"___ Moon goes round the Earth.",o:["A","An","The","–"],a:2,e:"Унікальні об’єкти (the Moon, the Sun, the Earth) вживаються з the."},
+{t:"Граматика",g:"art",q:"My brother plays ___ guitar very well.",o:["a","an","the","–"],a:2,e:"З назвами музичних інструментів після play вживаємо the."},
+{t:"Читання",g:"read",p:"Tom wanted to buy a new phone, but it was too expensive. He decided to save money for three months and work at a café on weekends. Finally, he bought the phone and was proud of himself.",q:"How did Tom get money for the phone?",o:["He borrowed it from his parents","He worked at a café on weekends","He sold his old phone","He won a competition"],a:1,e:"У тексті сказано, що Том підробляв у кафе на вихідних."},
+{t:"Читання",g:"read",p:"The city library opens at 9 a.m. and closes at 6 p.m. on weekdays. On Saturdays, it is open only until 2 p.m. It is closed on Sundays.",q:"When can you visit the library at 4 p.m.?",o:["On Saturday","On Sunday","On Monday","On Saturday and Sunday"],a:2,e:"У будні бібліотека працює до 18:00, у суботу лише до 14:00, у неділю зачинена."}
+);
+var TG=["cond","tense","ger","pperf","wf","phr","art","read"],TN={cond:"умовні речення",tense:"Present Perfect, for/since",ger:"герундій та інфінітив",pperf:"Past Perfect",wf:"словотвір",phr:"фразові дієслова",art:"артиклі",read:"читання"};
+POOL.forEach(function(q,n){q.id=n;if(!q.g)q.g=TG[n]});
+var Q=[],SEEN={},WEAK=[],ROUND=0;
+function sh(a){return a.sort(function(){return Math.random()-.5})}
+function fresh(g,n,ex){return sh(POOL.filter(function(q){return q.g===g&&!SEEN[q.id]&&ex.indexOf(q)<0})).slice(0,n)}
+function buildRound(){var r=[];
+if(ROUND===0){var gs=[];POOL.forEach(function(q){if(gs.indexOf(q.g)<0)gs.push(q.g)});sh(gs).forEach(function(g){r=r.concat(fresh(g,1,r))});r=r.slice(0,10)}else{
+WEAK.forEach(function(g){r=r.concat(fresh(g,2,r))});r=r.slice(0,10);
+if(r.length<8){var rest=sh(POOL.filter(function(q){return !SEEN[q.id]&&r.indexOf(q)<0}));r=r.concat(rest.slice(0,8-r.length))}
+if(!r.length){SEEN={};r=sh(POOL.slice()).slice(0,8)}}
+r.forEach(function(q){SEEN[q.id]=1});Q=r;ROUND++}
+var L="ABCD",TOTAL=600,st={i:0,ans:[],left:TOTAL,phase:"start"},tm=null,app=document.getElementById("app");
+function fmt(s){var m=Math.floor(s/60),x=s%60;return m+":"+(x<10?"0":"")+x}
+function start(){buildRound();st={i:0,ans:[],left:TOTAL,phase:"quiz"};clearInterval(tm);tm=setInterval(tick,1000);render()}
+function tick(){st.left--;var el=document.getElementById("tm");if(el){el.textContent=fmt(st.left);el.className="timer"+(st.left<60?" low":"")}if(st.left<=0)finish()}
+function finish(){clearInterval(tm);WEAK=[];Q.forEach(function(q,n){if(st.ans[n]!==q.a&&WEAK.indexOf(q.g)<0)WEAK.push(q.g)});st.phase="result";render();window.scrollTo(0,0)}
+function pick(k){st.ans[st.i]=k;render()}
+function go(n){st.i=n;render();window.scrollTo(0,0)}
+function render(){
+if(st.phase==="start"){app.innerHTML='<div class="card"><p class="meta">Прототип · Англійська мова</p><h1>Тренажер до НМТ</h1><p>8 запитань: граматика, лексика, читання. На виконання 10 хвилин. Після тесту програма знайде теми з помилками й у наступному раунді дасть нові речення саме з них, а не ті самі питання.</p><p class="meta">Питань у базі: '+POOL.length+(DB?" (з бази даних)":" (вбудовані; зʼєднання з базою немає)")+'</p><div class="nav"><button class="btn p" onclick="start()">Почати тест</button></div></div>';return}
+if(st.phase==="result"){var sc=0,h="";Q.forEach(function(q,n){var u=st.ans[n],ok=u===q.a;if(ok)sc++;
+h+='<div class="card rv"><span class="tag '+(ok?"ok":"bad")+'">'+(ok?"Правильно":(u===undefined?"Без відповіді":"Неправильно"))+'</span><p class="meta">'+q.t+'</p>'+(q.p?'<p class="passage">'+q.p+'</p>':'')+'<h2>'+q.q+'</h2><p style="margin:0">Правильна відповідь: <b>'+L[q.a]+'. '+q.o[q.a]+'</b>'+(u!==undefined&&!ok?'<br>Ваша відповідь: '+L[u]+'. '+q.o[u]:'')+'</p><div class="why">'+q.e+'</div></div>'});
+app.innerHTML='<div class="card"><p class="meta">Результат</p><div class="score">'+sc+' / '+Q.length+'</div><p style="margin:0">'+(sc>=7?"Дуже добре! Лишилось підтягнути дрібниці.":sc>=4?"Непогана база. Повторіть теми, де були помилки.":"Варто почати з повторення основ. Розбір нижче допоможе.")+'</p>'+(WEAK.length?'<div class="why">Слабкі теми: '+WEAK.map(function(g){return TN[g]||g}).join(", ")+'. У наступному раунді будуть нові речення саме з цих тем, а не ті самі питання.</div>':'')+'<div class="nav"><button class="btn p" onclick="start()">'+(WEAK.length?"Повторити слабкі теми":"Нові питання")+'</button></div></div>'+h;return}
+var q=Q[st.i],u=st.ans[st.i],d="";
+Q.forEach(function(_,n){d+='<button aria-label="Запитання '+(n+1)+'" class="'+(st.ans[n]!==undefined?"done ":"")+(n===st.i?"cur":"")+'" onclick="go('+n+')"></button>'});
+var o="";q.o.forEach(function(t,k){o+='<button class="opt'+(u===k?" sel":"")+'" onclick="pick('+k+')"><span class="l">'+L[k]+'</span><span>'+t+'</span></button>'});
+var last=st.i===Q.length-1;
+app.innerHTML='<div class="top"><b>Запитання '+(st.i+1)+' з '+Q.length+'</b><span id="tm" class="timer'+(st.left<60?" low":"")+'">'+fmt(st.left)+'</span></div><div class="dots">'+d+'</div><div class="card"><p class="meta">'+q.t+'</p>'+(q.p?'<p class="passage">'+q.p+'</p>':'')+'<h2>'+q.q+'</h2>'+o+'</div><div class="nav"><button class="btn" onclick="go('+(st.i-1)+')"'+(st.i===0?" disabled":"")+'>Назад</button>'+(last?'<button class="btn p" onclick="finish()">Завершити</button>':'<button class="btn p" onclick="go('+(st.i+1)+')">Далі</button>')+'</div>'}
+var SB="https://wkjoylgwkfzwquuskdcp.supabase.co",KEY="sb_publishable_6qY3YiXQFFmYszOwrX-4rg_uhr0yWFA",DB=false;
+function loadQ(){app.innerHTML='<div class="card"><p>Завантаження питань…</p></div>';
+fetch(SB+"/rest/v1/questions?select=*&order=id",{headers:{apikey:KEY}}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(rows){if(rows.length>=8){POOL=rows.map(function(r,n){return{id:n,g:r.topic,t:r.section,p:r.passage||undefined,q:r.question,o:r.options,a:r.correct,e:r.explanation}});DB=true}}).catch(function(){}).then(render)}
+loadQ();
+</script>
+</body>
+</html>
